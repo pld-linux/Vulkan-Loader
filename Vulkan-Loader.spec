@@ -1,6 +1,6 @@
-
+#
 # Conditional build:
-%bcond_with	tests	# run tests (requires Google Test)
+%bcond_with	tests	# run tests (requires Google Test sources; TODO: use system gtest)
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
@@ -12,20 +12,24 @@ Name:		Vulkan-Loader
 Version:	%{api_version}
 Release:	1
 License:	Apache v2.0, parts MIT-like
-Group:		Development
+Group:		Libraries
+#Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/releases
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/v%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	aec66f05e2d16794f9365aecce01f60e
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 BuildRequires:	cmake >= 3.4
-%if %{with tests} && %(locale -a | grep -q '^C\.UTF-8$'; echo $?)
+%if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
 BuildRequires:	Vulkan-Headers = %{api_version}
+#%{?with_tests:BuildRequires:	gtest-devel}
+%{?with_tests:BuildRequires:	libstdc++-devel >= 6:4.7}
 %{?with_x11:BuildRequires:	libxcb-devel}
 BuildRequires:	pkgconfig
 BuildRequires:	python3 >= 1:3
 BuildRequires:	python3-lxml
 BuildRequires:	python3-modules >= 1:3
+BuildRequires:	rpmbuild(macros) >= 1.605
 %{?with_wayland:BuildRequires:	wayland-devel}
 %{?with_x11:BuildRequires:	xorg-lib-libX11-devel}
 Provides:	vulkan(loader) = %{api_version}
