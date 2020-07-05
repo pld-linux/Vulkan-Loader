@@ -1,28 +1,30 @@
 #
 # Conditional build:
-%bcond_with	tests	# run tests (requires Google Test sources; TODO: use system gtest)
+%bcond_with	tests	# run tests (some failing?)
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
-%define	api_version	1.2.133
+%define	api_version	1.2.135.0
 
 Summary:	Vulkan API loader
 Summary(pl.UTF-8):	Biblioteka wczytująca sterowniki Vulkan
 Name:		Vulkan-Loader
+# note: prefer "sdk-" tags for better quality level
 Version:	%{api_version}
 Release:	1
 License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/releases
-Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	4c176849668a0fc757f45838fcab1131
+Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/sdk-%{version}/%{name}-sdk-%{version}.tar.gz
+# Source0-md5:	9cc783820e0116bb3dc2148d1236ae67
+Patch0:		%{name}-system-gtest.patch
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 BuildRequires:	cmake >= 3.10.2
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
 BuildRequires:	Vulkan-Headers = %{api_version}
-#%{?with_tests:BuildRequires:	gtest-devel}
+%{?with_tests:BuildRequires:	gtest-devel}
 %{?with_tests:BuildRequires:	libstdc++-devel >= 6:4.7}
 %{?with_x11:BuildRequires:	libxcb-devel}
 BuildRequires:	pkgconfig
@@ -57,7 +59,8 @@ Development files for the Vulkan loader.
 Pliki nagłówkowe loadera Vulkan.
 
 %prep
-%setup -qn %{name}-%{version}
+%setup -qn %{name}-sdk-%{version}
+%patch0 -p1
 
 %build
 install -d build
@@ -65,7 +68,7 @@ cd build
 
 # .pc file creation expect CMAKE_INSTALL_LIBDIR to be relative (to CMAKE_INSTALL_PREFIX)
 %cmake .. \
-	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
+	-DCMAKE_INSTALL_LIBDIR:PATH=%{_lib} \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 	-DBUILD_WSI_XLIB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF} \
@@ -75,7 +78,10 @@ cd build
 
 %if %{with tests}
 cd tests
-LC_ALL=C.UTF-8 VK_LAYER_PATH=layers LD_LIBRARY_PATH=../loader:layers ./run_loader_tests.sh
+LC_ALL=C.UTF-8 \
+LD_LIBRARY_PATH=../loader:layers \
+VK_LAYER_PATH=layers \
+./run_loader_tests.sh
 cd ..
 %endif
 

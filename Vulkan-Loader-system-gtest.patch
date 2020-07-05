@@ -1,0 +1,12 @@
+--- Vulkan-Loader-sdk-1.2.135.0/CMakeLists.txt.orig	2020-04-02 18:20:56.000000000 +0200
++++ Vulkan-Loader-sdk-1.2.135.0/CMakeLists.txt	2020-07-05 17:25:44.051987690 +0200
+@@ -38,9 +38,6 @@
+     option(BUILD_TESTS "Build Tests" OFF)
+ endif()
+ 
+-# Add the externals directory early so we pickup the headers if they're present
+-add_subdirectory(external)
+-
+ if (TARGET Vulkan::Headers)
+     message(STATUS "Using Vulkan headers from Vulkan::Headers target")
+     get_target_property(VulkanHeaders_INCLUDE_DIRS Vulkan::Headers INTERFACE_INCLUDE_DIRECTORIES)
