@@ -4,26 +4,26 @@
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
-%define	api_version	1.2.135.0
+%define	api_version	1.2.198.0
 
 Summary:	Vulkan API loader
 Summary(pl.UTF-8):	Biblioteka wczytująca sterowniki Vulkan
 Name:		Vulkan-Loader
 # note: prefer "sdk-" tags for better quality level
-Version:	%{api_version}
+Version:	1.2.198.1
 Release:	1
 License:	Apache v2.0, parts MIT-like
 Group:		Libraries
-#Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/releases
+#Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/sdk-%{version}/%{name}-sdk-%{version}.tar.gz
-# Source0-md5:	9cc783820e0116bb3dc2148d1236ae67
-Patch0:		%{name}-system-gtest.patch
+# Source0-md5:	e2a381bb2457227519a0a75aeee62975
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 BuildRequires:	cmake >= 3.10.2
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
 BuildRequires:	Vulkan-Headers = %{api_version}
+%{?with_tests:BuildRequires:	gmock-devel}
 %{?with_tests:BuildRequires:	gtest-devel}
 %{?with_tests:BuildRequires:	libstdc++-devel >= 6:4.7}
 %{?with_x11:BuildRequires:	libxcb-devel}
@@ -34,8 +34,8 @@ BuildRequires:	python3-modules >= 1:3
 BuildRequires:	rpmbuild(macros) >= 1.605
 %{?with_wayland:BuildRequires:	wayland-devel}
 %{?with_x11:BuildRequires:	xorg-lib-libX11-devel}
-Provides:	vulkan(loader) = %{api_version}
-Obsoletes:	vulkan-loader
+Provides:	vulkan(loader) = %{version}
+Obsoletes:	vulkan-loader < 1.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -60,7 +60,6 @@ Pliki nagłówkowe loadera Vulkan.
 
 %prep
 %setup -qn %{name}-sdk-%{version}
-%patch0 -p1
 
 %build
 install -d build
