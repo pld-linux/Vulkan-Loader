@@ -4,19 +4,20 @@
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
-%define	api_version	1.2.198.0
+%define	api_version	1.3.224.1
 
 Summary:	Vulkan API loader
 Summary(pl.UTF-8):	Biblioteka wczytująca sterowniki Vulkan
 Name:		Vulkan-Loader
 # note: prefer "sdk-" tags for better quality level
-Version:	1.2.198.1
+Version:	%{api_version}
 Release:	1
 License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/sdk-%{version}/%{name}-sdk-%{version}.tar.gz
-# Source0-md5:	e2a381bb2457227519a0a75aeee62975
+# Source0-md5:	54b7498c122e2ec8eb3d1dc80c654456
+Patch0:		pc.patch
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 BuildRequires:	cmake >= 3.10.2
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
@@ -60,6 +61,7 @@ Pliki nagłówkowe loadera Vulkan.
 
 %prep
 %setup -qn %{name}-sdk-%{version}
+%patch0 -p1
 
 %build
 install -d build
