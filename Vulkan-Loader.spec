@@ -67,9 +67,7 @@ Pliki nagłówkowe loadera Vulkan.
 install -d build
 cd build
 
-# .pc file creation expect CMAKE_INSTALL_LIBDIR to be relative (to CMAKE_INSTALL_PREFIX)
 %cmake .. \
-	-DCMAKE_INSTALL_LIBDIR:PATH=%{_lib} \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 	-DBUILD_WSI_XLIB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF} \

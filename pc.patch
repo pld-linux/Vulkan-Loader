@@ -1,12 +1,43 @@
---- Vulkan-Loader-sdk-1.3.224.1/loader/vulkan.pc.in.orig	2022-08-15 17:32:06.000000000 +0200
-+++ Vulkan-Loader-sdk-1.3.224.1/loader/vulkan.pc.in	2022-11-27 01:05:11.149652405 +0100
+From 595993488ace91448d6ab809da0d1dc4a9f4128e Mon Sep 17 00:00:00 2001
+From: Jan Palus <jpalus@fastmail.com>
+Date: Mon, 28 Nov 2022 13:29:21 +0100
+Subject: [PATCH] cmake: fix pkgconfig file for absolute install paths
+
+Fixes #1076
+---
+ loader/CMakeLists.txt | 7 +++++++
+ loader/vulkan.pc.in   | 4 ++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/loader/CMakeLists.txt b/loader/CMakeLists.txt
+index 2eb704fde..b24c037b4 100644
+--- a/loader/CMakeLists.txt
++++ b/loader/CMakeLists.txt
+@@ -409,6 +409,13 @@ if(PKG_CONFIG_FOUND)
+     else()
+         set(CMAKE_INSTALL_FULL_LIBDIR_PC ${CMAKE_INSTALL_FULL_LIBDIR})
+     endif ()
++    if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
++        set(CMAKE_INSTALL_REL_LIBDIR_PC ${CMAKE_INSTALL_FULL_LIBDIR_PC})
++        set(CMAKE_INSTALL_REL_INCLUDEDIR_PC ${CMAKE_INSTALL_FULL_INCLUDEDIR})
++    else()
++        file(RELATIVE_PATH CMAKE_INSTALL_REL_LIBDIR_PC ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_FULL_LIBDIR_PC})
++        file(RELATIVE_PATH CMAKE_INSTALL_REL_INCLUDEDIR_PC ${CMAKE_INSTALL_PREFIX} ${CMAKE_INSTALL_FULL_INCLUDEDIR})
++    endif()
+     configure_file("vulkan.pc.in" "vulkan.pc" @ONLY)
+     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/vulkan.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+ endif()
+diff --git a/loader/vulkan.pc.in b/loader/vulkan.pc.in
+index 82e9f5edc..1d38a22ef 100644
+--- a/loader/vulkan.pc.in
++++ b/loader/vulkan.pc.in
 @@ -1,7 +1,7 @@
  prefix=@CMAKE_INSTALL_PREFIX@
  exec_prefix=${prefix}
 -libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
 -includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
-+libdir=@CMAKE_INSTALL_LIBDIR@
-+includedir=@CMAKE_INSTALL_INCLUDEDIR@
++libdir=${exec_prefix}/@CMAKE_INSTALL_REL_LIBDIR_PC@
++includedir=${prefix}/@CMAKE_INSTALL_REL_INCLUDEDIR_PC@
  
  Name: @CMAKE_PROJECT_NAME@
  Description: Vulkan Loader
