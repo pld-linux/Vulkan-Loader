@@ -26,7 +26,7 @@ BuildRequires:	glibc-localedb-all
 BuildRequires:	Vulkan-Headers = %{api_version}
 %{?with_tests:BuildRequires:	gmock-devel}
 %{?with_tests:BuildRequires:	gtest-devel}
-%{?with_tests:BuildRequires:	libstdc++-devel >= 6:4.7}
+BuildRequires:	libstdc++-devel >= 6:4.7
 %{?with_x11:BuildRequires:	libxcb-devel}
 BuildRequires:	pkgconfig
 BuildRequires:	python3 >= 1:3
