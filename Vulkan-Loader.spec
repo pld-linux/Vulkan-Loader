@@ -4,7 +4,7 @@
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
-%define	api_version	1.3.224.1
+%define	api_version	1.3.243.0
 
 Summary:	Vulkan API loader
 Summary(pl.UTF-8):	Biblioteka wczytująca sterowniki Vulkan
@@ -16,10 +16,9 @@ License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/sdk-%{version}/%{name}-sdk-%{version}.tar.gz
-# Source0-md5:	54b7498c122e2ec8eb3d1dc80c654456
-Patch0:		pc.patch
+# Source0-md5:	87284897301309f54a14965796987764
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
-BuildRequires:	cmake >= 3.10.2
+BuildRequires:	cmake >= 3.17.2
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
@@ -61,30 +60,23 @@ Pliki nagłówkowe loadera Vulkan.
 
 %prep
 %setup -qn %{name}-sdk-%{version}
-%patch0 -p1
 
 %build
-install -d build
-cd build
-
-%cmake .. \
+%cmake -B build \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 	-DBUILD_WSI_XLIB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF} \
 	-DBUILD_WSI_XCB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF}
 
-%{__make}
+%{__make} -C build
 
 %if %{with tests}
-cd tests
+cd build/tests
 LC_ALL=C.UTF-8 \
 LD_LIBRARY_PATH=../loader:layers \
 VK_LAYER_PATH=layers \
 ./run_loader_tests.sh
-cd ..
 %endif
-
-cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
