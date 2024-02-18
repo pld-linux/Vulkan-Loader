@@ -4,19 +4,20 @@
 %bcond_without	wayland	# Wayland support in loader
 %bcond_without	x11	# XLib support in loader
 
-%define	api_version	1.3.243.0
+# note: prefer "vulkan-sdk-" tags for better quality level
+%define	api_version	1.3.275.0
+%define	gitref		vulkan-sdk-%{api_version}
 
 Summary:	Vulkan API loader
 Summary(pl.UTF-8):	Biblioteka wczytująca sterowniki Vulkan
 Name:		Vulkan-Loader
-# note: prefer "sdk-" tags for better quality level
 Version:	%{api_version}
 Release:	1
 License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
-Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/sdk-%{version}/%{name}-sdk-%{version}.tar.gz
-# Source0-md5:	87284897301309f54a14965796987764
+Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/%{gitref}/%{name}-%{gitref}.tar.gz
+# Source0-md5:	d8629661e42cb1823926984e55a91f49
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 BuildRequires:	cmake >= 3.17.2
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
@@ -59,7 +60,7 @@ Development files for the Vulkan loader.
 Pliki nagłówkowe loadera Vulkan.
 
 %prep
-%setup -qn %{name}-sdk-%{version}
+%setup -q -n %{name}-%{gitref}
 
 %build
 %cmake -B build \
@@ -109,3 +110,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan.so
 %{_pkgconfigdir}/vulkan.pc
+%{_libdir}/cmake/VulkanLoader
