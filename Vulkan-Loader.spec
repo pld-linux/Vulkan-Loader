@@ -1,11 +1,12 @@
 #
 # Conditional build:
-%bcond_with	tests	# run tests (some failing?)
-%bcond_without	wayland	# Wayland support in loader
-%bcond_without	x11	# XLib support in loader
+%bcond_with	tests		# run tests (some failing?)
+%bcond_with	directfb	# DirectFB support in loader
+%bcond_without	wayland		# Wayland support in loader
+%bcond_without	x11		# XLib support in loader
 
 # note: prefer "vulkan-sdk-" tags for better quality level
-%define	api_version	1.3.280.0
+%define	api_version	1.4.309.0
 %define	gitref		vulkan-sdk-%{api_version}
 
 Summary:	Vulkan API loader
@@ -17,9 +18,10 @@ License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/%{gitref}/%{name}-%{gitref}.tar.gz
-# Source0-md5:	282d32eab31abf5aa14ec59be8e8ae19
+# Source0-md5:	0e99616c5d68e0f05851e5a4ea2d7113
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
-BuildRequires:	cmake >= 3.17.2
+%{?with_directfb:BuildRequires:	DirectFB-devel}
+BuildRequires:	cmake >= 3.22.1
 %if %{with tests} && %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
@@ -35,6 +37,7 @@ BuildRequires:	python3-modules >= 1:3
 BuildRequires:	rpmbuild(macros) >= 1.605
 %{?with_wayland:BuildRequires:	wayland-devel}
 %{?with_x11:BuildRequires:	xorg-lib-libX11-devel}
+%{?with_x11:BuildRequires:	xorg-lib-libXrandr-devel}
 Provides:	vulkan(loader) = %{version}
 Obsoletes:	vulkan-loader < 1.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -65,8 +68,10 @@ Pliki nagłówkowe loadera Vulkan.
 %build
 %cmake -B build \
 	-DBUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF} \
+	-DBUILD_WSI_DIRECTFB_SUPPORT=%{?with_directfb:ON}%{!?with_directfb:OFF} \
 	-DBUILD_WSI_WAYLAND_SUPPORT=%{?with_wayland:ON}%{!?with_wayland:OFF} \
 	-DBUILD_WSI_XLIB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF} \
+	-DBUILD_WSI_XLIB_XRANDR_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF} \
 	-DBUILD_WSI_XCB_SUPPORT=%{?with_x11:ON}%{!?with_x11:OFF}
 
 %{__make} -C build
@@ -94,7 +99,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc README.md GOVERNANCE.md CONTRIBUTING.md
+%doc README.md SECURITY.md
 %dir %{_sysconfdir}/vulkan
 %dir %{_sysconfdir}/vulkan/icd.d
 %dir %{_sysconfdir}/vulkan/explicit_layer.d
