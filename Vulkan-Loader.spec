@@ -6,7 +6,7 @@
 %bcond_without	x11		# XLib support in loader
 
 # note: prefer "vulkan-sdk-" tags for better quality level
-%define	api_version	1.4.321.0
+%define	api_version	1.4.341.0
 %define	gitref		vulkan-sdk-%{api_version}
 
 Summary:	Vulkan API loader
@@ -18,7 +18,7 @@ License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/%{gitref}/%{name}-%{gitref}.tar.gz
-# Source0-md5:	844b9d8f9266c2950f88d821f4e7f666
+# Source0-md5:	990ccb29138c6933fae9bb1140f04c3c
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 %{?with_directfb:BuildRequires:	DirectFB-devel}
 BuildRequires:	cmake >= 3.22.1
