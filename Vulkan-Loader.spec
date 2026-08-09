@@ -6,7 +6,7 @@
 %bcond_without	x11		# XLib support in loader
 
 # note: prefer "vulkan-sdk-" tags for better quality level
-%define	api_version	1.4.341.0
+%define	api_version	1.4.357.0
 %define	gitref		vulkan-sdk-%{api_version}
 
 Summary:	Vulkan API loader
@@ -18,7 +18,7 @@ License:	Apache v2.0, parts MIT-like
 Group:		Libraries
 #Source0Download: https://github.com/KhronosGroup/Vulkan-Loader/tags
 Source0:	https://github.com/KhronosGroup/Vulkan-Loader/archive/%{gitref}/%{name}-%{gitref}.tar.gz
-# Source0-md5:	990ccb29138c6933fae9bb1140f04c3c
+# Source0-md5:	ce35f16bee47e9faf0a50d682a2db77d
 URL:		https://github.com/KhronosGroup/Vulkan-Loader/
 %{?with_directfb:BuildRequires:	DirectFB-devel}
 BuildRequires:	cmake >= 3.22.1
@@ -108,11 +108,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vulkan/icd.d
 %dir %{_datadir}/vulkan/explicit_layer.d
 %dir %{_datadir}/vulkan/implicit_layer.d
-%attr(755,root,root) %{_libdir}/libvulkan.so.1.*.*
-%attr(755,root,root) %ghost %{_libdir}/libvulkan.so.1
+%{_libdir}/libvulkan.so.1.*.*
+%ghost %{_libdir}/libvulkan.so.1
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan.so
+%{_libdir}/libvulkan.so
 %{_pkgconfigdir}/vulkan.pc
 %{_libdir}/cmake/VulkanLoader
